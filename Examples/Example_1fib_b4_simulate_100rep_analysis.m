@@ -63,8 +63,8 @@ b = 4; % back ground magnetic field strength (1 is same as b=1000)
 ratio = 10; % ratio of the leading eigenvalue to the second eigenvalue in the signal simulation
 weight = 1;
 half = 1; % generate data on half shpere
-lmax = 8;  % SH levels
-jmax = 3; % SN levels corresponding to lmax
+lmax = 16;  % SH levels
+jmax = 4; % SN levels corresponding to lmax
 
 J_r = 5; % vertex level used for graph and representation purpose (dense)
 b_response = b(1);  % b value for the response matrix Rmatrix that we use
@@ -258,7 +258,7 @@ Penalty_matrix_lmax16 = diag(Penalty_matrix_lmax16);
 %% symmetric needlets design matrix
 Constraint = SN_vertex_symm;  %% constraint matrix: Constraint*beta>=0;
 C_trans=(C_trans_symm*C_trans_symm')\C_trans_symm; % SH*f = SN*C_trans_symm' 
-design_SN = design_SH_lmax8*C_trans;   
+design_SN = design_SH_lmax16*C_trans;   
 
 %% sequences of penalty parameters 
 %%% for SH+ridge
@@ -361,6 +361,8 @@ theta1_SN = repmat(-99,N_rep,1);
 phi1_SN = repmat(-99,N_rep,1);
 
 SN_stop_index = zeros(N_rep,1);
+theta_rep = zeros(N_rep,1);
+phi_rep = zeros(N_rep,1);
 
 Dis = squareform(pdist(pos_p','cosine'));
 % fod1_s_rota = [fod1_s(1) fod1_s(3) 0];
@@ -381,6 +383,8 @@ for rep = 1:N_rep
     
     %%%%% record old stop index
     SN_stop_index(rep) = index_selected_SN;
+    theta_rep(rep) = theta_r;
+    phi_rep(rep) = phi_r;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -420,11 +424,11 @@ for rep = 1:N_rep
     FOD_SN_temp_st = fod_stand(FOD_SN_all(rep,:));
     
     % Hellinger distance
-    HD_SH_lmax8(rep) = hellinger_dis(dirac_sh_st_lmax8, FOD_SH_temp_st);
-    HD_sCSD_lmax8(rep) = hellinger_dis(dirac_sh_st_lmax8, FOD_lmax8_sCSD_temp_st);
-    HD_sCSD_lmax12(rep) = hellinger_dis(dirac_sh_st_lmax8, FOD_lmax12_sCSD_temp_st);
-    HD_sCSD_lmax16(rep) = hellinger_dis(dirac_sh_st_lmax8, FOD_lmax16_sCSD_temp_st);
-    HD_SN(rep) = hellinger_dis(dirac_sh_st_lmax8, FOD_SN_temp_st);
+    HD_SH_lmax8(rep) = hellinger_dis(dirac_sh_st_lmax16, FOD_SH_temp_st);
+    HD_sCSD_lmax8(rep) = hellinger_dis(dirac_sh_st_lmax16, FOD_lmax8_sCSD_temp_st);
+    HD_sCSD_lmax12(rep) = hellinger_dis(dirac_sh_st_lmax16, FOD_lmax12_sCSD_temp_st);
+    HD_sCSD_lmax16(rep) = hellinger_dis(dirac_sh_st_lmax16, FOD_lmax16_sCSD_temp_st);
+    HD_SN(rep) = hellinger_dis(dirac_sh_st_lmax16, FOD_SN_temp_st);
 
     % peak detection
     [~, ~, ~, ~, ~, peak_pos_SH_final_lmax8] = FOD_peak(FOD_SH_lmax8(rep,:), Dis, kmin, peak_thresh, pos_p, theta_p, phi_p);
@@ -795,6 +799,8 @@ mean_angle1_sCSD_lmax12 = mean(angle1_sCSD_lmax12(nfib_sCSD_lmax12==1))*180/pi;
 mean_angle1_sCSD_lmax16 = mean(angle1_sCSD_lmax16(nfib_sCSD_lmax16==1))*180/pi;
 mean_angle1_SN = mean(angle1_SN(nfib_SN==1))*180/pi;
 
+
+
 %%%%%
 angle1_std_SH_lmax8 = std(angle1_SH_lmax8(nfib_SH_lmax8==1));
 angle1_std_sCSD_lmax8 = std(angle1_sCSD_lmax8(nfib_sCSD_lmax8==1));
@@ -803,12 +809,13 @@ angle1_std_sCSD_lmax16 = std(angle1_sCSD_lmax16(nfib_sCSD_lmax16==1));
 angle1_std_SN = std(angle1_SN(nfib_SN==1));
 
 %%%%%
-
+%{
 plot_spherical_function(v_p,f_p,FOD_SN_all(rep,:),options);  % FOD_sCSD_lmax12
 %FOD_SH_est_lmax16 FOD_sCSD_lmax16
 hold on;
 draw_fiber(theta0,phi0,1.5,0.5*max(FOD_SN));
 view([1,0,0])
+%}
 
 figure;
 subplot(1,6,1)
@@ -1023,7 +1030,7 @@ figure;
 bar(rate,'stacked');
 savefig(strcat(save_path,'rate.fig'));
 %}
-
+%{
 nfib_all = [nfib_SH_lmax8'; nfib_sCSD_lmax8'; nfib_sCSD_lmax12'; nfib_SN']';
 new_nfib_all = nfib_all;
 new_nfib_all(new_nfib_all>=6) = 6;
@@ -1051,7 +1058,7 @@ set(gca, 'XTick', [1;2;3;4], 'XTickLabel', cellstr(['SH    ';'sCSD8 ';'sCSD12'; 
 colorbar('Ticks',ticks);          % show color scale
 savefig(strcat(save_path,'1fib','_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_N',num2str(n_sample),'_heat.fig'));
 
-
+%}
 % openfig('rate.fig');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1097,11 +1104,15 @@ input.makeCompleteLatexDocument = 0;
 % call latexTable:
 latex = latexTable(input);
 
+
+MSE_SN = (sum((angle1_SN*180/pi).^2)/N_rep);
+display(MSE_SN)
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+%{
 Ctrs_loglambda = -6:0.2:-2;
 Ctrs_df = 0:5:45;
 
@@ -1126,7 +1137,7 @@ subplot(3,2,6)
 hist(log10(lambda_seq_la(ind_SN_RSSdiff_s)),Ctrs_loglambda);
 title('log lambda RSSdiff');
 savefig('df_loglambda_hist');
-
+%}
 save(strcat(save_path,'space.mat'));
 %{
 figure;

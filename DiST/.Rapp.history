@@ -1,0 +1,127 @@
+setwd("/Users/Raymond/MyLife/asResearcher/Brain Imaging/Expermental_New_codes/simulation/sim-curve")
+base::source("/tmp/r-plugin-Raymond/Rsource-1185-single_task.R", echo=TRUE)
+S0=S0const
+b=1
+ncpu=4
+opt=list()
+base::source("/tmp/r-plugin-Raymond/Rsource-1185-dwi_fit.R", echo=TRUE)
+i=1
+out <- try(biased.mle.cs2.iso(dwis=dwi.obs[,i], design=design,#
+                                    sigma=sigma[i], S0=S0[i], b=b, maxJ=opt$maxJ,#
+                                    basis.depth=opt$basis.depth,#
+                                    basis.random=opt$basis.random,#
+                                    def.alphas=opt$def.alphas, betas0=NULL,#
+                                    Ninner=opt$Ninner, Nmiddle.max=opt$Nmiddle.max,#
+                                    display=F, pre.thres=opt$pre.thres,#
+                                    alphas.const=opt$alphas.const))
+i=2
+out <- try(biased.mle.cs2.iso(dwis=dwi.obs[,i], design=design,#
+                                    sigma=sigma[i], S0=S0[i], b=b, maxJ=opt$maxJ,#
+                                    basis.depth=opt$basis.depth,#
+                                    basis.random=opt$basis.random,#
+                                    def.alphas=opt$def.alphas, betas0=NULL,#
+                                    Ninner=opt$Ninner, Nmiddle.max=opt$Nmiddle.max,#
+                                    display=F, pre.thres=opt$pre.thres,#
+                                    alphas.const=opt$alphas.const))
+fit (for each voxel)#
+  registerDoParallel(cores=cpus)#
+  fitlist <- foreach(i=1:n.voxel, .verbose=T, .packages=c("quadprog",#
+                                                          "dwi.internals2",#
+                                                          "cluster")) %dopar%{#
+    icount <- 0#
+    out <- 1; class(out) <- "try-error"#
+    while ((inherits(out,"try-error"))&&(icount<=2)){#
+      out <- try(biased.mle.cs2.iso(dwis=dwi.obs[,i], design=design,#
+                                    sigma=sigma[i], S0=S0[i], b=b, maxJ=opt$maxJ,#
+                                    basis.depth=opt$basis.depth,#
+                                    basis.random=opt$basis.random,#
+                                    def.alphas=opt$def.alphas, betas0=NULL,#
+                                    Ninner=opt$Ninner, Nmiddle.max=opt$Nmiddle.max,#
+                                    display=F, pre.thres=opt$pre.thres,#
+                                    alphas.const=opt$alphas.const))#
+      icount <- icount + 1#
+    }#
+    if(inherits(out,"try-error")){#
+      cat(i,"\n")#
+    }#
+    out#
+  }
+dwi.fit.l1.constraint
+source("dwi_fit.R")
+registerDoParallel(cores=cpus)#
+  fitlist <- foreach(i=1:n.voxel, .verbose=T, .packages=c("quadprog",#
+                                                          "dwi.internals2",#
+                                                          "cluster")) %dopar%{#
+    icount <- 0#
+    out <- 1; class(out) <- "try-error"#
+    while ((inherits(out,"try-error"))&&(icount<=2)){#
+      out <- try(biased.mle.cs2.iso(dwis=dwi.obs[,i], design=design,#
+                                    sigma=sigma[i], S0=S0[i], b=b, maxJ=opt$maxJ,#
+                                    basis.depth=opt$basis.depth,#
+                                    basis.random=opt$basis.random,#
+                                    def.alphas=opt$def.alphas, betas0=NULL,#
+                                    Ninner=opt$Ninner, Nmiddle.max=opt$Nmiddle.max,#
+                                    display=F, pre.thres=opt$pre.thres,#
+                                    alphas.const=opt$alphas.const))#
+      icount <- icount + 1#
+    }#
+    if(inherits(out,"try-error")){#
+      cat(i,"\n")#
+    }#
+    out#
+  }
+i=200
+out <- try(biased.mle.cs2.iso(dwis=dwi.obs[,i], design=design,#
+                                    sigma=sigma[i], S0=S0[i], b=b, maxJ=opt$maxJ,#
+                                    basis.depth=opt$basis.depth,#
+                                    basis.random=opt$basis.random,#
+                                    def.alphas=opt$def.alphas, betas0=NULL,#
+                                    Ninner=opt$Ninner, Nmiddle.max=opt$Nmiddle.max,#
+                                    display=F, pre.thres=opt$pre.thres,#
+                                    alphas.const=opt$alphas.const))
+traceback()
+base::source("/tmp/r-plugin-Raymond/Rsource-1185-dwi_fit.R")
+out <- try(biased.mle.cs2.iso(dwis=dwi.obs[,i], design=design,#
+                                    sigma=sigma[i], S0=S0[i], b=b, maxJ=opt$maxJ,#
+                                    basis.depth=opt$basis.depth,#
+                                    basis.random=opt$basis.random,#
+                                    def.alphas=opt$def.alphas, betas0=NULL,#
+                                    Ninner=opt$Ninner, Nmiddle.max=opt$Nmiddle.max,#
+                                    display=F, pre.thres=opt$pre.thres,#
+                                    alphas.const=opt$alphas.const))
+dir.list
+Q
+base::source("/tmp/r-plugin-Raymond/Rsource-1185-dwi_fit.R")
+out <- try(biased.mle.cs2.iso(dwis=dwi.obs[,i], design=design,#
+                                    sigma=sigma[i], S0=S0[i], b=b, maxJ=opt$maxJ,#
+                                    basis.depth=opt$basis.depth,#
+                                    basis.random=opt$basis.random,#
+                                    def.alphas=opt$def.alphas, betas0=NULL,#
+                                    Ninner=opt$Ninner, Nmiddle.max=opt$Nmiddle.max,#
+                                    display=F, pre.thres=opt$pre.thres,#
+                                    alphas.const=opt$alphas.const))
+base::source("/tmp/r-plugin-Raymond/Rsource-1185-dwi_fit.R")
+out <- try(biased.mle.cs2.iso(dwis=dwi.obs[,i], design=design,#
+                                    sigma=sigma[i], S0=S0[i], b=b, maxJ=opt$maxJ,#
+                                    basis.depth=opt$basis.depth,#
+                                    basis.random=opt$basis.random,#
+                                    def.alphas=opt$def.alphas, betas0=NULL,#
+                                    Ninner=opt$Ninner, Nmiddle.max=opt$Nmiddle.max,#
+                                    display=F, pre.thres=opt$pre.thres,#
+                                    alphas.const=opt$alphas.const))
+tdwi
+temp
+sum(tdwi^2/(2*sigma^2) - log(besselIm(temp,0,T)) - temp)
+tdwi^2/(2*sigma^2)
+log(besselIm(temp,0,T))
+length(log(besselIm(temp,0,T)))
+Q
+source("dwi_fit.R")
+out <- try(biased.mle.cs2.iso(dwis=dwi.obs[,i], design=design,#
+                                    sigma=sigma[i], S0=S0[i], b=b, maxJ=opt$maxJ,#
+                                    basis.depth=opt$basis.depth,#
+                                    basis.random=opt$basis.random,#
+                                    def.alphas=opt$def.alphas, betas0=NULL,#
+                                    Ninner=opt$Ninner, Nmiddle.max=opt$Nmiddle.max,#
+                                    display=F, pre.thres=opt$pre.thres,#
+                                    alphas.const=opt$alphas.const))

@@ -57,12 +57,12 @@ elseif(J_use==3)
 elseif(J_use==4)
     nsample = 321;
 end
-b = [3,3]; % back ground magnetic field strength (1 is same as b=1000)
+b = [4,4]; % back ground magnetic field strength (1 is same as b=1000)
 ratio = [10,10]; % ratio of the leading eigenvalue to the second eigenvalue in the signal simulation
-weight = [0.5,0.5];
+weight = [0.7,0.3];
 half = 1; % generate data on half shpere
-lmax = 16;  % SH levels
-jmax = 4; % SN levels corresponding to lmax
+lmax = 8;  % SH levels
+jmax = 3; % SN levels corresponding to lmax
 
 J_r = 5; % vertex level used for graph and representation purpose (dense)
 b_response = b(1);  % b value for the response matrix Rmatrix that we use
@@ -72,7 +72,7 @@ sigma = 0.05;  %noixe level %middle  noise: note S0=1, so SNR=20
 
 %% FOD 
 %% separation angle between the two fibers 
-fod1_s = [0.7071 0  0.7071]; %%0,0,1; z-[0 0 1] [ sqrt(3)/2 0  1/2] [0.7071 0  0.7071] [1/2 0  sqrt(3)/2] [0.2588 0   0.9659] [sqrt(3)/2 0 1/2]  [0.7660 0  0.6428]
+fod1_s = [1 0 0]; %%0,0,1; z-[0 0 1] [ sqrt(3)/2 0  1/2] [0.7071 0  0.7071] [1/2 0  sqrt(3)/2] [0.2588 0   0.9659] [sqrt(3)/2 0 1/2]
 fod2_s = [0 0 1]; %%1,0,0; x-axis
 sep=acos(fod1_s*fod2_s');
 
@@ -259,7 +259,7 @@ Penalty_matrix_lmax16 = diag(Penalty_matrix_lmax16);
 %% symmetric needlets design matrix
 Constraint = SN_vertex_symm;  %% constraint matrix: Constraint*beta>=0;
 C_trans=(C_trans_symm*C_trans_symm')\C_trans_symm; % SH*f = SN*C_trans_symm' 
-design_SN = design_SH_lmax16*C_trans;   
+design_SN = design_SH_lmax8*C_trans;   
 
 %% sequences of penalty parameters 
 %%% for SH+ridge
@@ -1001,7 +1001,6 @@ angle2_std_sCSD_lmax16 = std(angle2_sCSD_lmax16(nfib_sCSD_lmax16==2));
 angle2_std_SN = std(angle2_SN(nfib_SN==2));
 
 
-
 %%%%%
 
 %%%%%
@@ -1310,9 +1309,6 @@ input.makeCompleteLatexDocument = 0;
 % call latexTable:
 latex = latexTable(input);
 
-
-MSE_SN = (sum((angle1_SN*180/pi).^2)+sum(angle2_SN*180/pi))/N_rep;
-display(MSE_SN)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

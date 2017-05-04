@@ -1,11 +1,11 @@
 
 clear all;
-lmax = 8;
-b = [4, 4]; 
+lmax = 16;
+b = [1, 1]; 
 ratio = [10, 10];
 n_sample = 41;
 sigma = 0.05;
-separation = 90
+separation = 45
 
 folder_path = strcat('/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_review/','2fib','_sep',num2str(separation),'_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');    
 % folder_path = strcat('/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_review/','1fib','_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');    

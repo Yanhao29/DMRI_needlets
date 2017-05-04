@@ -1,4 +1,4 @@
-%% function to apply SH-ridge to the DWI data
+%% function to apply SH-ridge to the DWI data (select l2 tunning parameter by BIC)
 
 function [f_est_all, dwi_est_all, df_all, RSS_all, BIC_all, index_selected] ...
     = SH_ridge(DWI, design_matrix, penalty_matrix, lambda_seq)
