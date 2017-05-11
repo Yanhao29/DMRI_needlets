@@ -1,19 +1,20 @@
 rm(list=ls())
 library(R.matlab)
 
-path_load = '/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_review/'
+path_load = '/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_new/'
 
-sep = 90
-lmax = 8
-b = 4
+sep = 45
+lmax = 16
+b = 3
 ratio = 10
 n_sample = 41
+sigma = 0.05
 
 folder_name = paste0('2fib_sep',toString(sep),'_lmax',toString(lmax),'_b',toString(b),
-                     '_ratio',toString(ratio),'_n',toString(n_sample),'_sig0.05/')
+                     '_ratio',toString(ratio),'_n',toString(n_sample),'_sig',toString(sigma),'/')
 
 file_name = paste0('2fib_sep',toString(sep),'_lmax',toString(lmax),'_b',toString(b),
-                     '_ratio',toString(ratio),'_n',toString(n_sample),'_sig0.05_rep')
+                     '_ratio',toString(ratio),'_n',toString(n_sample),'_sig',toString(sigma),'_rep')
 
 
 source('/Users/hao/Dropbox/DMRI_code/DiST/dwi_basic.R')
@@ -67,8 +68,8 @@ for(rep in 1:N_rep){
   design_temp <- generate.design.noS0(grad.mat_temp)
   
   print(rep)
-  
-  out <- try(biased.mle.cs2.iso(dwis=c(temp$DWI), design=design_temp,
+  # DWI, phi0
+  out <- try(biased.mle.cs2.iso(dwis=c(temp$DWI.simulated.h), design=design_temp,
                                 sigma=c(temp$sig), S0=1, b=c(temp$b)[1], maxJ=opt$maxJ,
                                 basis.depth=opt$basis.depth,
                                 basis.random=opt$basis.random,
@@ -80,14 +81,14 @@ for(rep in 1:N_rep){
   
   if(out$n.fiber == 2){
     fib_temp = out$vs
-    theta.r = temp$theta.r - t(temp$theta0)
-    phi.r = temp$phi.r - t(temp$phi0)
+    theta.r = temp$theta0 - (temp$theta0s)  #temp$theta.r
+    phi.r = temp$phi0 - (temp$phi0s)  #temp$phi0
     
     fibVec_DiST[rep,,] = out$vs
-    phi1_DiST[rep] = temp$phi.r[1]
-    phi2_DiST[rep] = temp$phi.r[2]
-    theta1_DiST[rep] = temp$theta.r[1]
-    theta2_DiST[rep] = temp$theta.r[2]
+    phi1_DiST[rep] = temp$phi0[1]  ## temp$phi.r[1]
+    phi2_DiST[rep] = temp$phi0[2]  ## temp$phi.r[2]
+    theta1_DiST[rep] = temp$theta0[1]  ## temp$theta.r[1]
+    theta2_DiST[rep] = temp$theta0[2] ## temp$theta.r[2]
     rotationM1 = matrix(c(cos(phi.r[1])*cos(theta.r[1]),-sin(phi.r[1]),
                           cos(phi.r[1])*sin(theta.r[1]),sin(phi.r[1])*cos(theta.r[1]),
                           cos(phi.r[1]),sin(phi.r[1])*sin(theta.r[1]),-sin(theta.r[1]),
@@ -115,9 +116,9 @@ for(rep in 1:N_rep){
     sep_DiST[rep] = min(acos(sum(fib_temp[1,]*fib_temp[2,])/(sqrt(sum(fib_temp[1,]*fib_temp[1,]))*sqrt(sum(fib_temp[2,]*fib_temp[2,])))),
                         abs(pi-acos(sum(fib_temp[1,]*fib_temp[2,])/(sqrt(sum(fib_temp[1,]*fib_temp[1,]))*sqrt(sum(fib_temp[2,]*fib_temp[2,]))))))*180/pi
   } else {
-    fib_temp = out$vs
-    theta.r = temp$theta.r - t(temp$theta0)
-    phi.r = temp$phi.r - t(temp$phi0)
+    fib_temp = out$vs 
+    theta.r = temp$theta0 - (temp$theta0s)  ## temp$theta.r
+    phi.r = temp$phi0 - (temp$phi0s)  ## temp$phi.r
     rotationM1 = matrix(c(cos(phi.r[1])*cos(theta.r[1]),-sin(phi.r[1]),
                           cos(phi.r[1])*sin(theta.r[1]),sin(phi.r[1])*cos(theta.r[1]),
                           cos(phi.r[1]),sin(phi.r[1])*sin(theta.r[1]),-sin(theta.r[1]),
@@ -153,7 +154,7 @@ angle1_DiST_mean = mean(angle1_DiST[nfib_DiST==2])
 angle2_DiST_mean = mean(angle2_DiST[nfib_DiST==2])
 angle1_DiST_sd = sd(angle1_DiST[nfib_DiST==2])
 angle2_DiST_sd = sd(angle2_DiST[nfib_DiST==2])
-mean(sep_DiST[nfib_DiST==2])
+sep_mean = mean(sep_DiST[nfib_DiST==2])
 
 save(nfib_DiST, angle1_DiST, angle2_DiST, sep_DiST, theta1_DiST, theta2_DiST,
      phi1_DiST, phi2_DiST, fibVec_DiST, fib_true_DiST, fit_DiST,
@@ -166,4 +167,69 @@ writeMat(mat_file, nfib_DiST=nfib_DiST, angle1_DiST=angle1_DiST,
          theta2_DiST=theta2_DiST, phi1_DiST=phi1_DiST, phi2_DiST=phi2_DiST,
          fibVec_DiST=fibVec_DiST, fib_true_DiST=fib_true_DiST, 
          correct_DiST=correct_DiST, over_DiST=over_DiST, under_DiST=under_DiST)
+
+#######################################
+#######################################
+
+rm(list=ls())
+sep = 60
+lmax = 8
+b = 1
+ratio = 10
+n_sample = 41
+sigma = 0.05
+library(xtable)
+path_load = '/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_new_results/'
+load(paste0(path_load,folder_name = paste0('2fib_sep',toString(sep),'_lmax',toString(lmax),
+                                           '_b',toString(b),'_ratio',toString(ratio),
+                                           '_n',toString(n_sample),'_sig',toString(sigma),'/DiST_summary.Rdata')
+))
+
+angle1_DiST_mean = mean(angle1_DiST[nfib_DiST==2])
+angle2_DiST_mean = mean(angle2_DiST[nfib_DiST==2])
+angle1_DiST_sd = sd(angle1_DiST[nfib_DiST==2])
+angle2_DiST_sd = sd(angle2_DiST[nfib_DiST==2])
+sep_mean = mean(sep_DiST[nfib_DiST==2])
+
+xtable(cbind(correct_DiST,under_DiST,over_DiST,angle1_DiST_mean,angle2_DiST_mean, 
+             sep_mean,0,0), digits = 2)
+
+
+#######################################
+#######################################
+
+rm(list=ls())
+sep = 60
+lmax = 8
+b = 1
+ratio = 10
+n_sample = 41
+sigma = 0.05
+library(xtable)
+
+path_load = '/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_review/'
+
+load(paste0(path_load,folder_name = paste0('2fib_sep',toString(sep),'_lmax',toString(lmax),
+                                           '_b',toString(b),'_ratio',toString(ratio),
+                                           '_n',toString(n_sample),'_sig',toString(sigma),'/DiST_summary.Rdata')
+))
+
+load(paste0(path_load,folder_name = paste0('2fib_sep',toString(sep),'_lmax',toString(lmax),
+                                           '_b',toString(b),'_ratio',toString(ratio),
+                                           '_n',toString(n_sample),'_sig',toString(sigma),'_SH8/DiST_summary.Rdata')
+))
+
+angle1_DiST_mean = mean(angle1_DiST[nfib_DiST==2])
+angle1_DiST_mean = mean(angle1_DiST[nfib_DiST==2])
+
+angle2_DiST_mean = mean(angle2_DiST[nfib_DiST==2])
+angle1_DiST_sd = sd(angle1_DiST[nfib_DiST==2])
+angle2_DiST_sd = sd(angle2_DiST[nfib_DiST==2])
+sep_mean = mean(sep_DiST[nfib_DiST==2])
+
+xtable(cbind(correct_DiST,under_DiST,over_DiST,angle1_DiST_mean,angle2_DiST_mean, 
+             sep_mean,0,0), digits = 2)
+
+# xtable(cbind(correct_DiST,under_DiST,over_DiST,angle1_DiST_mean,
+# 0,0), digits = 2)
 

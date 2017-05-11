@@ -1,14 +1,17 @@
 
 clear all;
-lmax = 16;
+lmax = 8;
 b = [1, 1]; 
 ratio = [10, 10];
 n_sample = 41;
 sigma = 0.05;
-separation = 45
+separation = 90;
+DTI_lmax = 8;
 
-folder_path = strcat('/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_review/','2fib','_sep',num2str(separation),'_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');    
+folder_path = strcat('/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_review/','2fib','_sep',num2str(separation),'_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'_SH',num2str(DTI_lmax),'/');    
 % folder_path = strcat('/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_review/','1fib','_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');    
+% folder_path = strcat('/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_review/','1fib','_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');    
+
 % folder_path = strcat('/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_new_results/','3fib_sep',num2str(round(sep*180/pi,0)),'_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');    
 % folder_path = strcat('/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_new_results/','missRes_2fib_sep',num2str(round(sep*180/pi,0)),'_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_ratioR',num2str(10),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');    
 % folder_path = strcat('/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_new_results/','3fib_plain_sep',num2str(round(sep*180/pi,0)),'_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');    

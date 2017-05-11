@@ -3,7 +3,7 @@
 %%%%11-04-2011 Jun
 %%%% add Rician noise on each points of the orignal grid (2B)*(2B)
 
-function y = add_Rician_noise(dwi , sigma)
+function y = add_Rician_noise(dwi , sigma, seed)
 
 %%%sigma is the std of the error
 %%% dwi is a vector or matrix of true dwis without noise , (4B^2)*1 or (2B)*(2B)
@@ -11,6 +11,7 @@ function y = add_Rician_noise(dwi , sigma)
 
 [a,b] = size(dwi);
 
+rng(seed);
 errors = sigma*randn(2,a*b);
 
 y = dwi;

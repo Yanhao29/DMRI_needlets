@@ -1,8 +1,8 @@
 library(R.matlab)
 
 path_load = '/Users/hao/Dropbox/stats_project/FOD_codes_simulation/simulation_review/'
-folder_name = '1fib_lmax8_b4_ratio10_n41_sig0.05/'
-file_name = '1fib_lmax8_b4_ratio10_n41_sig0.05_rep'
+folder_name = '1fib_lmax8_b3_ratio10_n41_sig0.05_SH8/'
+file_name = '1fib_lmax8_b3_ratio10_n41_sig0.05_rep'
 
 source('/Users/hao/Dropbox/DMRI_code/DiST/dwi_basic.R')
 source('/Users/hao/Dropbox/DMRI_code/DiST/dwi_fit.R')

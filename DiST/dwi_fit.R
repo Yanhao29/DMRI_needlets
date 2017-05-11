@@ -4,7 +4,7 @@
 library(doParallel)
 library(rgenoud)
 library(cluster)
-source("dwi_basic.R")
+# source("dwi_basic.R")
 
 ################################
 #### tessellation of sphere ####

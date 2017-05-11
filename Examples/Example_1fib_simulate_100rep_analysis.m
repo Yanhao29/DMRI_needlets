@@ -59,12 +59,12 @@ elseif(J_use==3)
 elseif(J_use==4)
     nsample = 321;
 end
-b = 4; % back ground magnetic field strength (1 is same as b=1000)
+b = 3; % back ground magnetic field strength (1 is same as b=1000)
 ratio = 10; % ratio of the leading eigenvalue to the second eigenvalue in the signal simulation
 weight = 1;
 half = 1; % generate data on half shpere
-lmax = 16;  % SH levels
-jmax = 4; % SN levels corresponding to lmax
+lmax = 8;  % SH levels
+jmax = 3; % SN levels corresponding to lmax
 
 J_r = 5; % vertex level used for graph and representation purpose (dense)
 b_response = b(1);  % b value for the response matrix Rmatrix that we use
@@ -78,7 +78,7 @@ theta0 = 0;
 phi0 = 0;
 
 %% saving path and folder name
-save_path = strcat(path_save,'simulation_review/','1fib','_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');
+folder_path = strcat(path_save,'simulation_review/','1fib','_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% using equal-angle grid with level J (3->81 direction on half sphere, 4->321; 2->21)
@@ -258,7 +258,7 @@ Penalty_matrix_lmax16 = diag(Penalty_matrix_lmax16);
 %% symmetric needlets design matrix
 Constraint = SN_vertex_symm;  %% constraint matrix: Constraint*beta>=0;
 C_trans=(C_trans_symm*C_trans_symm')\C_trans_symm; % SH*f = SN*C_trans_symm' 
-design_SN = design_SH_lmax16*C_trans;   
+design_SN = design_SH_lmax8*C_trans;   
 
 %% sequences of penalty parameters 
 %%% for SH+ridge
@@ -376,7 +376,6 @@ for rep = 1:N_rep
     
     display(rep);
     
-    folder_path = strcat(path_save,'simulation_review/','1fib','_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');
     temp_name = strcat('1fib','_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'_rep',num2str(rep),'.mat');
     filename = strcat(folder_path, temp_name);
     load(filename);
@@ -424,11 +423,11 @@ for rep = 1:N_rep
     FOD_SN_temp_st = fod_stand(FOD_SN_all(rep,:));
     
     % Hellinger distance
-    HD_SH_lmax8(rep) = hellinger_dis(dirac_sh_st_lmax16, FOD_SH_temp_st);
-    HD_sCSD_lmax8(rep) = hellinger_dis(dirac_sh_st_lmax16, FOD_lmax8_sCSD_temp_st);
-    HD_sCSD_lmax12(rep) = hellinger_dis(dirac_sh_st_lmax16, FOD_lmax12_sCSD_temp_st);
-    HD_sCSD_lmax16(rep) = hellinger_dis(dirac_sh_st_lmax16, FOD_lmax16_sCSD_temp_st);
-    HD_SN(rep) = hellinger_dis(dirac_sh_st_lmax16, FOD_SN_temp_st);
+    HD_SH_lmax8(rep) = hellinger_dis(dirac_sh_st_lmax8, FOD_SH_temp_st);
+    HD_sCSD_lmax8(rep) = hellinger_dis(dirac_sh_st_lmax8, FOD_lmax8_sCSD_temp_st);
+    HD_sCSD_lmax12(rep) = hellinger_dis(dirac_sh_st_lmax8, FOD_lmax12_sCSD_temp_st);
+    HD_sCSD_lmax16(rep) = hellinger_dis(dirac_sh_st_lmax8, FOD_lmax16_sCSD_temp_st);
+    HD_SN(rep) = hellinger_dis(dirac_sh_st_lmax8, FOD_SN_temp_st);
 
     % peak detection
     [~, ~, ~, ~, ~, peak_pos_SH_final_lmax8] = FOD_peak(FOD_SH_lmax8(rep,:), Dis, kmin, peak_thresh, pos_p, theta_p, phi_p);

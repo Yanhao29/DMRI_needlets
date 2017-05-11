@@ -56,9 +56,9 @@ elseif(J_use==3)
 elseif(J_use==4)
     nsample = 321;
 end
-b = [1, 1]; % back ground magnetic field strength (1 is same as b=1000)
+b = [3, 3]; % back ground magnetic field strength (1 is same as b=1000)
 ratio = [10, 10]; % ratio of the leading eigenvalue to the second eigenvalue in the signal simulation
-weight = [0.,5 0.5];
+weight = [0.5 0.5];
 half = 1; % generate data on half shpere
 lmax = 8;  % SH levels
 jmax = 3; % SN levels corresponding to lmax
@@ -71,7 +71,7 @@ sigma = 0.05;  %noixe level %middle  noise: note S0=1, so SNR=20
 
 %% FOD 
 %% separation angle between the two fibers 
-fod1_s = [0.7071 0  0.7071]; %%0,0,1; z-[0 0 1] [ sqrt(3)/2 0  1/2] [0.7071 0  0.7071] [1/2 0  sqrt(3)/2] [0.2588 0   0.9659] [sqrt(3)/2 0 1/2] [0.7660 0  0.6428]
+fod1_s = [1/2 0  sqrt(3)/2]; %%0,0,1; z-[0 0 1] [ sqrt(3)/2 0  1/2] [0.7071 0  0.7071] [1/2 0  sqrt(3)/2] [0.2588 0   0.9659] [sqrt(3)/2 0 1/2] [0.7660 0  0.6428]
 fod2_s = [0 0 1]; %%1,0,0; x-axis
 sep=acos(fod1_s*fod2_s');
 

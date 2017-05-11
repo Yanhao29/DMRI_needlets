@@ -1,4 +1,4 @@
-%% Example script for FOD with 1 fiber (mimic Raymond's 1 fiber simulation)
+%% Example script for FOD with 1 fiber (DWI from FOD, not dirac)
 %% First you need to add the pathes that contains all the needed functions
 % Simulation with 100 replicates
 
@@ -56,10 +56,11 @@ elseif(J_use==3)
 elseif(J_use==4)
     nsample = 321;
 end
-b = 4; % back ground magnetic field strength (1 is same as b=1000)
+b = 3; % back ground magnetic field strength (1 is same as b=1000)
 ratio = 10; % ratio of the leading eigenvalue to the second eigenvalue in the signal simulation
 weight = 1;
 half = 1; % generate data on half shpere
+Rotate = 1;
 lmax = 8;  % SH levels
 jmax = 3; % SN levels corresponding to lmax
 
@@ -75,7 +76,7 @@ theta0 = 0;
 phi0 = 0;
 
 %% saving path and folder name
-save_path = strcat(path_save,'simulation_review/','1fib','_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');
+save_path = strcat(path_save,'simulation_review/','1fib','_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'_SH8','/');
 mkdir(save_path);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -258,6 +259,16 @@ Constraint = SN_vertex_symm;  %% constraint matrix: Constraint*beta>=0;
 C_trans=(C_trans_symm*C_trans_symm')\C_trans_symm; % SH*f = SN*C_trans_symm' 
 design_SN = design_SH_lmax8*C_trans;   
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% SH rep of true FOD  (used in generating DWI)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+coe_sh1_lmax8 = Dirac_SH_coe(lmax8,theta0(1),phi0(1)); %% SH coefficients
+dirac_sh1_lmax8 = SH_J5_all_lmax8*coe_sh1_lmax8;
+dirac_sh_lmax8 = weight(1)*dirac_sh1_lmax8;  %%SH representation
+dirac_sh_st_lmax8 =fod_stand(dirac_sh_lmax8); %%standardized to be nonnegative and sum =1
+
+
+
 %% sequences of penalty parameters 
 %%% for SH+ridge
 lambda_min = 1e-6;  %%smallest lamabda
@@ -301,8 +312,8 @@ for rep = 1:n_rep
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% generate dwi signals on the equal-angle grid/gradient-direction grid 
     seed = rep*10+21;
-    [DWI, theta_r, phi_r]= DWI_generate(J_use, b, ratio, weight, theta0, phi0, sigma, half, seed);
-
+    %[DWI, theta_r, phi_r] = DWI_generate(J_use, b, ratio, weight, theta0, phi0, sigma, half, seed);
+    [DWI, theta_r, phi_r] = DWI_generate_FOD(J_use, lmax8, b, ratio, weight, theta0, phi0, sigma, half, Rotate, seed);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

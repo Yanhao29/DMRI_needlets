@@ -1,13 +1,29 @@
-%% function to generate data
+%% function to generate data accordng to S = Phi*R*f, 
 
-function [DWI, theta0_use, phi0_use, rotationMatrix] = DWI_generate(J, b, ratio, weight, theta0, phi0, sigma, half, seed)
+function [DWI, theta0_use, phi0_use, rotationMatrix] = DWI_generate_FODaddISO(J, lmax, b, ratio, weight, theta0, phi0, sigma, ISOweight,half, Rotate, seed)
 % J defines sample size, J==2.5 corresponds to J==3 n_sample=41
+% lmax defines how fine we represent the dirac function using SH
+% b defines b-value
 % theta0, phi0 defines dirac direction
 % sigma defines noise level, if sigma==0 noiseless
 % rotate = 1, a random rotation guided by seed; else no rotation
 
 % theta_r, phi_r: fiber direction angular coordinates after random rotation
 
+%{
+J = 2.5;
+lmax = 16;
+b = [3, 3];
+ratio = [10, 10];
+weight = [0.5, 0.5];
+theta0 = [0, pi/2];
+phi0 = [0, 0];
+sigma = 0.05;
+half = 1;
+Rotate = 1;
+ISOweight = 15;
+seed = 31;
+%}
 k = size(b,2);
 fod = zeros(k,3);
 for i=1:k
@@ -15,11 +31,15 @@ for i=1:k
 end
 
 s = RandStream('mcg16807','Seed',seed);%21
-%RandStream.setDefaultStream(s); %%for PC: set random number generator seed
-RandStream.setGlobalStream(s); %%for server: set random number generator seed
-temp=RandOrthMat(3); %%% uniformly generate a 3 by 3 orthogonal matrix
+if(Rotate == 1)
+    %RandStream.setDefaultStream(s); %%for PC: set random number generator seed
+    RandStream.setGlobalStream(s); %%for server: set random number generator seed
+    temp=RandOrthMat(3); %%% uniformly generate a 3 by 3 orthogonal matrix
+else
+    temp = eye(3);
+end
 rotationMatrix = temp;
-
+    
 fod_use = fod*temp;
 theta0_use = zeros(k,1);
 phi0_use = zeros(k,1);
@@ -29,10 +49,11 @@ for i = 1:k
     theta0_use(i) = acos(fod_use(i,3));
 end
 
-
+%{
 options.base_mesh = 'ico';
 options.relaxation = 1;
 options.keep_subdivision = 1;
+%}
 
 if(J==2.5)
     J_use=3;
@@ -40,6 +61,7 @@ else
     J_use = J;
 end
 
+%{
 [vertex,~] = compute_semiregular_sphere(J_use,options); %%vertex and face of the grid 
 pos = vertex{end};  %% x-y-z coordinates of the vertex 
 
@@ -127,21 +149,29 @@ if(half==1)
 else
     sampling_grid_index = 1:size(pos,2);
 end
-
-% pos_sampling = pos(:,sampling_grid_index); %% The x , y , z coordinates of the sampling grid.
-% phi_sampling = phi(:,sampling_grid_index); %% The sampled phi.
-% theta_sampling = theta(:,sampling_grid_index); %% The sampled theta.
-
-DWI_noiseless_all = zeros(size(theta,2),1); 
-for at = 1:size(theta, 2)
-    DWI_noiseless_all(at) = myresponse_crossing(b,ratio,weight,theta0_use,phi0_use,theta(at)*pi,phi(at)*2*pi); 
+%}
+coe_sh = zeros(k,(lmax+1)*(lmax+2)/2);
+for i=1:k
+    coe_sh(i,:) = Dirac_SH_coe(lmax,theta0_use(i),phi0_use(i));
 end
+coe_sh = coe_sh'* weight';
+coe_sh = coe_sh/sqrt(sum(coe_sh.^2));  %% make FOD a distribution
+
+coe_1 = [1 zeros(1,length(coe_sh)-1)]';
+coe_sh_test = coe_sh + coe_1*ISOweight;
+%coe_sh_test = coe_sh_test/sqrt(sum(coe_sh_test.^2));
+
+Phi = SH_vertex(J, lmax, half);
+%R = Response_Rmatrix_construction(b(1),ratio(1),J_use,lmax);
+load(strcat('Rmatrix_J5','_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'.mat' ));  %file name of the file that stores the corresponding R matrix
+
+DWI_noiseless_all = Phi*Rmatrix*coe_sh_test;
 
 %%% add Rician noise to get observed DWI 
 DWI_simulated_all = add_Rician_noise(DWI_noiseless_all, sigma, seed);
 
 %%% get observed DWI on the sampling grid 
-DWI=DWI_simulated_all(sampling_grid_index);
+DWI=DWI_simulated_all;
     
 
 

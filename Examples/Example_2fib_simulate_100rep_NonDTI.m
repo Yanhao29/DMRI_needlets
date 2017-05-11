@@ -54,14 +54,16 @@ elseif(J_use==2.5)
 elseif(J_use==3)
     n_sample = 81;
 elseif(J_use==4)
-    nsample = 321;
+    nsample = 321;I
 end
-b = [3, 3]; % back ground magnetic field strength (1 is same as b=1000)
+b = [1, 1]; % back ground magnetic field strength (1 is same as b=1000)
 ratio = [10, 10]; % ratio of the leading eigenvalue to the second eigenvalue in the signal simulation
 weight = [0.5 0.5];
 half = 1; % generate data on half shpere
-lmax = 16;  % SH levels
-jmax = 4; % SN levels corresponding to lmax
+Rotate = 1;
+lmax = 8;  % SH levels
+jmax = 3; % SN levels corresponding to lmax
+DTI_lmax = 4;
 
 J_r = 5; % vertex level used for graph and representation purpose (dense)
 b_response = b(1);  % b value for the response matrix Rmatrix that we use
@@ -71,7 +73,7 @@ sigma = 0.05;  %noixe level %middle  noise: note S0=1, so SNR=20
 
 %% FOD 
 %% separation angle between the two fibers 
-fod1_s = [0.7071 0  0.7071]; %%0,0,1; z-[0 0 1] [ sqrt(3)/2 0  1/2] [0.7071 0  0.7071] [1/2 0  sqrt(3)/2] [0.2588 0   0.9659] [sqrt(3)/2 0 1/2] [0.7660 0  0.6428]
+fod1_s = [0.7071 0  0.7071]; %%0,0,1; z-[0 0 1] 0.9659 0 0.2588 [ sqrt(3)/2 0  1/2] [0.7071 0  0.7071] [1/2 0  sqrt(3)/2] [0.2588 0   0.9659] [sqrt(3)/2 0 1/2] [0.7660 0  0.6428]
 fod2_s = [0 0 1]; %%1,0,0; x-axis
 sep=acos(fod1_s*fod2_s');
 
@@ -217,7 +219,8 @@ clearvars SH_vertex Rmatrix;
 
 
 %% saving path and folder name
-save_path = strcat(path_save,'simulation_review/','2fib_sep',num2str(round(sep*180/pi,0)),'_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');
+% save_path = strcat(path_save,'simulation_review/','2fib_sep',num2str(round(sep*180/pi,0)),'_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'/');
+save_path = strcat(path_save,'simulation_review/','2fib_sep',num2str(round(sep*180/pi,0)),'_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'_SH',num2str(DTI_lmax),'/');
 mkdir(save_path);
 
 
@@ -265,7 +268,7 @@ Penalty_matrix_lmax16 = diag(Penalty_matrix_lmax16);
 %% symmetric needlets design matrix
 Constraint = SN_vertex_symm;  %% constraint matrix: Constraint*beta>=0;
 C_trans=(C_trans_symm*C_trans_symm')\C_trans_symm; % SH*f = SN*C_trans_symm' 
-design_SN = design_SH_lmax16*C_trans;   
+design_SN = design_SH_lmax8*C_trans;   
 
 %% sequences of penalty parameters 
 %%% for SH+ridge
@@ -310,7 +313,7 @@ for rep = 1:n_rep
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% generate dwi signals on the equal-angle grid/gradient-direction grid 
     seed = rep*10+21;
-    [DWI, theta_r, phi_r]= DWI_generate(J_use, b, ratio, weight, theta0, phi0, sigma, half, seed);
+    [DWI, theta_r, phi_r] = DWI_generate_FOD(J_use, DTI_lmax, b, ratio, weight, theta0, phi0, sigma, half, Rotate, seed);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -513,6 +516,7 @@ for rep = 1:n_rep
 
     FOD_SN=SN_vertex_symm*z_all(:,index_selected_SN);
     FOD_SN_st = fod_stand(FOD_SN);
+    
     save_name = strcat('2fib_sep',num2str(round(sep*180/pi,0)),'_lmax',num2str(lmax),'_b',num2str(b(1)),'_ratio',num2str(ratio(1)),'_n',num2str(n_sample),'_sig',num2str(sigma),'_rep',num2str(rep),'.mat');
     save(strcat(save_path,save_name));
     display(strcat('Done with rep ', num2str(rep)));
@@ -527,6 +531,18 @@ plot_spherical_function(v_p,f_p,FOD_SN,options);  % FOD_sCSD_lmax12
 %FOD_SH_est_lmax16 FOD_sCSD_lmax16
 hold on;
 draw_fiber(theta_r,phi_r,1.5,0.5*max(FOD_SN));
+%}
+
+%{
+coe_sh_lmax4 = 0.5*Dirac_SH_coe(4,theta0(1),phi0(1))+...
+        0.5*Dirac_SH_coe(4,theta0(2),phi0(2));
+    
+fod_lmax4 = SH_J5_all_lmax8(:,1:15)*coe_sh_lmax4;
+figure
+plot_spherical_function(v_p,f_p,fod_lmax4,options);  % FOD_sCSD_lmax12
+%FOD_SH_est_lmax16 FOD_sCSD_lmax16
+hold on;
+draw_fiber(theta0,phi0,1.5,0.5*max(fod_lmax4));
 %}
 
 

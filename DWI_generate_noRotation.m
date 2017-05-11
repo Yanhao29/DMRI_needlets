@@ -1,6 +1,6 @@
 %% function to generate data
 
-function [DWI, theta0_use, phi0_use, rotationMatrix] = DWI_generate(J, b, ratio, weight, theta0, phi0, sigma, half, seed)
+function [DWI, theta0_use, phi0_use] = DWI_generate_noRotation(J, b, ratio, weight, theta0, phi0, sigma, half, seed)
 % J defines sample size, J==2.5 corresponds to J==3 n_sample=41
 % theta0, phi0 defines dirac direction
 % sigma defines noise level, if sigma==0 noiseless
@@ -14,12 +14,8 @@ for i=1:k
     fod(i,:) = [cos(phi0(i))*sin(theta0(i)) sin(phi0(i))*sin(theta0(i)) cos(theta0(i))];
 end
 
-s = RandStream('mcg16807','Seed',seed);%21
-%RandStream.setDefaultStream(s); %%for PC: set random number generator seed
-RandStream.setGlobalStream(s); %%for server: set random number generator seed
-temp=RandOrthMat(3); %%% uniformly generate a 3 by 3 orthogonal matrix
-rotationMatrix = temp;
-
+temp = eye(3);
+    
 fod_use = fod*temp;
 theta0_use = zeros(k,1);
 phi0_use = zeros(k,1);
